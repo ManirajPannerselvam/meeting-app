@@ -1,124 +1,66 @@
 <script lang="ts">
-  let meetingTitle = "";
-  let discussion = "";
-  let decision = "";
-  let actionItem = "";
-  let owner = "";
-  let dueDate = "";
+  let meetingNotes = "";
 
-  let actions: any[] = [];
+  let mom = "";
+  let actionItems = [];
 
-  function addAction() {
-    actions = [
-      ...actions,
-      {
-        actionItem,
-        owner,
-        dueDate,
-        status: "Open"
-      }
+  function generateMoM() {
+    if (!meetingNotes.trim()) {
+      alert("Enter meeting notes");
+      return;
+    }
+
+    // Simple AI-like logic (we improve later with real AI)
+    mom =
+      "Meeting Summary:\n\n" +
+      "Discussion captured successfully.\n" +
+      "Key topics reviewed and decisions noted.";
+
+    actionItems = [
+      "Follow up on pending RF issues",
+      "Validate test results",
+      "Prepare weekly report"
     ];
-
-    actionItem = "";
-    owner = "";
-    dueDate = "";
-  }
-
-  function saveMoM() {
-    const mom = {
-      meetingTitle,
-      discussion,
-      decision,
-      actions
-    };
-
-    console.log(mom);
-
-    alert("Meeting Minutes Saved");
   }
 </script>
 
 <h1>Meeting Minutes (MoM)</h1>
 
-<div class="container">
+<textarea
+  bind:value={meetingNotes}
+  placeholder="Enter meeting discussion notes..."
+  rows="10"
+/>
 
-  <label>Meeting Title</label>
-  <input bind:value={meetingTitle} />
+<button on:click={generateMoM}>
+  Generate MoM
+</button>
 
-  <label>Discussion Points</label>
-  <textarea rows="5" bind:value={discussion}></textarea>
+<h2>Summary</h2>
+<pre>{mom}</pre>
 
-  <label>Decision Taken</label>
-  <textarea rows="3" bind:value={decision}></textarea>
-
-  <h2>Action Items</h2>
-
-  <input
-    bind:value={actionItem}
-    placeholder="Action Item"
-  />
-
-  <input
-    bind:value={owner}
-    placeholder="Owner"
-  />
-
-  <input
-    type="date"
-    bind:value={dueDate}
-  />
-
-  <button on:click={addAction}>
-    Add Action
-  </button>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Action</th>
-        <th>Owner</th>
-        <th>Due Date</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {#each actions as item}
-        <tr>
-          <td>{item.actionItem}</td>
-          <td>{item.owner}</td>
-          <td>{item.dueDate}</td>
-          <td>{item.status}</td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-
-  <button on:click={saveMoM}>
-    Save Meeting Minutes
-  </button>
-
-</div>
+<h2>Action Items</h2>
+<ul>
+  {#each actionItems as item}
+    <li>{item}</li>
+  {/each}
+</ul>
 
 <style>
-.container{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  padding:20px;
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
-input, textarea{
-  padding:10px;
+button {
+  padding: 10px 20px;
+  margin-bottom: 20px;
 }
 
-table{
-  width:100%;
-  margin-top:20px;
-}
-
-th, td{
-  border:1px solid #ddd;
-  padding:8px;
+pre {
+  background: #f4f4f4;
+  padding: 15px;
+  white-space: pre-wrap;
 }
 </style>

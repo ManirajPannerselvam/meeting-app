@@ -36,8 +36,20 @@
   <a href="/login">
     <button>Login</button>
   </a>
+<a href="/templates">
+  <button>Meeting Templates</button>
+</a>
 <a href="/calendar">
   <button>Calendar</button>
+</a>
+<a href="/recurring-meetings">
+  <button>Recurring Meetings</button>
+</a>
+<a href="/users">
+  <button>Users</button>
+</a>
+<a href="/search">
+  <button>Search</button>
 </a>
 
   <a href="/register">
@@ -55,6 +67,9 @@
 </a>
 <a href="/reports">
   <button>Reports</button>
+</a>
+<a href="/notifications">
+  <button>Notifications</button>
 </a>
 <a href="/chat">
   <button>Group Chat</button>

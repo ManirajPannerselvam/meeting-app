@@ -2,13 +2,12 @@
   import { onMount } from "svelte";
 
   let meetings: any[] = [];
+  let editIndex = -1;
 
   function loadMeetings() {
-    const data = localStorage.getItem("meetings");
-
-    if (data) {
-      meetings = JSON.parse(data);
-    }
+    meetings = JSON.parse(
+      localStorage.getItem("meetings") || "[]"
+    );
   }
 
   function deleteMeeting(index: number) {
@@ -22,9 +21,20 @@
     loadMeetings();
   }
 
-  onMount(() => {
-    loadMeetings();
-  });
+  function editMeeting(index: number) {
+    editIndex = index;
+  }
+
+  function saveEdit() {
+    localStorage.setItem(
+      "meetings",
+      JSON.stringify(meetings)
+    );
+
+    editIndex = -1;
+  }
+
+  onMount(loadMeetings);
 </script>
 
 <h1>Meeting List</h1>
@@ -33,22 +43,42 @@
   <thead>
     <tr>
       <th>Title</th>
-      <th>Type</th>
       <th>Date</th>
-      <th>Participants</th>
-      <th>Action</th>
+      <th>Type</th>
+      <th>Actions</th>
     </tr>
   </thead>
 
   <tbody>
     {#each meetings as meeting, index}
       <tr>
-        <td>{meeting.title}</td>
-        <td>{meeting.meetingType}</td>
-        <td>{meeting.meetingDate}</td>
-        <td>{meeting.participants}</td>
         <td>
-          <button on:click={() => deleteMeeting(index)}>
+          {#if editIndex === index}
+            <input bind:value={meeting.title} />
+          {:else}
+            {meeting.title}
+          {/if}
+        </td>
+
+        <td>{meeting.meetingDate}</td>
+        <td>{meeting.meetingType}</td>
+
+        <td>
+          {#if editIndex === index}
+            <button on:click={saveEdit}>
+              Save
+            </button>
+          {:else}
+            <button
+              on:click={() => editMeeting(index)}
+            >
+              Edit
+            </button>
+          {/if}
+
+          <button
+            on:click={() => deleteMeeting(index)}
+          >
             Delete
           </button>
         </td>
@@ -56,15 +86,3 @@
     {/each}
   </tbody>
 </table>
-
-<style>
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-th,td{
-  border:1px solid #ddd;
-  padding:10px;
-}
-</style>
