@@ -1,19 +1,32 @@
 <script lang="ts">
-  let name = "";
-  let email = "";
+  import { registerUser } from "$lib/services/auth";
+
+  let username = "";
   let password = "";
 
-  function register() {
-    alert("Registration Success");
-    window.location.href = "/login";
+  async function register() {
+    try {
+      await registerUser(username, password);
+
+      alert("Registration Successful");
+
+      username = "";
+      password = "";
+    } catch (e) {
+      alert("User already exists");
+    }
   }
 </script>
 
-<h1>Create Account</h1>
+<h1>Register</h1>
 
-<input bind:value={name} placeholder="Name" />
-<input bind:value={email} placeholder="Email" />
-<input bind:value={password} type="password" placeholder="Password" />
+<input bind:value={username} placeholder="Username" />
+
+<input
+  bind:value={password}
+  type="password"
+  placeholder="Password"
+/>
 
 <button on:click={register}>
   Register

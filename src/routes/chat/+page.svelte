@@ -1,43 +1,59 @@
 <script lang="ts">
+  import { saveChat, getChats }
+    from "$lib/services/database";
+
+  let meetingId = 1;
+  let sender = "";
   let message = "";
 
-  let messages = [
-    {
-      sender: "Mani",
-      text: "Welcome to the meeting room."
-    }
-  ];
+  let messages: any[] = [];
 
-  function sendMessage() {
-    if (!message.trim()) return;
+  async function loadChat() {
+    messages = await getChats(meetingId);
+  }
 
-    messages = [
-      ...messages,
-      {
-        sender: "You",
-        text: message
-      }
-    ];
+  async function sendMessage() {
+    if (!message) return;
+
+    await saveChat({
+      meetingId,
+      sender,
+      message
+    });
 
     message = "";
+
+    await loadChat();
   }
+
+  loadChat();
 </script>
 
 <h1>Meeting Chat</h1>
 
-<div class="chat-box">
+<div class="chatbox">
   {#each messages as msg}
-    <div class="message">
-      <strong>{msg.sender}</strong>
-      <p>{msg.text}</p>
+    <div class="msg">
+      <b>{msg.sender}</b>
+
+      <p>{msg.message}</p>
+
+      <small>
+        {msg.created_at}
+      </small>
     </div>
   {/each}
 </div>
 
-<div class="chat-input">
+<div class="input-area">
+  <input
+    bind:value={sender}
+    placeholder="Your Name"
+  />
+
   <input
     bind:value={message}
-    placeholder="Type message..."
+    placeholder="Type Message"
   />
 
   <button on:click={sendMessage}>
@@ -46,28 +62,23 @@
 </div>
 
 <style>
-.chat-box{
+.chatbox{
   height:400px;
   overflow:auto;
   border:1px solid #ddd;
-  padding:15px;
-  margin-bottom:15px;
-}
-
-.message{
-  margin-bottom:10px;
   padding:10px;
-  background:#f4f4f4;
-  border-radius:6px;
 }
 
-.chat-input{
+.msg{
+  margin-bottom:10px;
+  padding:8px;
+  border-radius:5px;
+  background:#f5f5f5;
+}
+
+.input-area{
   display:flex;
   gap:10px;
-}
-
-.chat-input input{
-  flex:1;
-  padding:10px;
+  margin-top:10px;
 }
 </style>

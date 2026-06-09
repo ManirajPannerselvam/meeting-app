@@ -1,16 +1,23 @@
 <script lang="ts">
-  let notifications = [
-    {
-      title: "Weekly RF Review",
-      message: "Meeting starts in 30 minutes",
-      priority: "High"
-    },
-    {
-      title: "Project Planning",
-      message: "Action item due tomorrow",
-      priority: "Medium"
-    }
-  ];
+  import { onMount } from "svelte";
+  import {
+    getNotifications,
+    markNotificationRead
+  } from "$lib/services/database";
+
+  let notifications: any[] = [];
+
+  async function loadData() {
+    notifications =
+      await getNotifications();
+  }
+
+  async function markRead(id: number) {
+    await markNotificationRead(id);
+    await loadData();
+  }
+
+  onMount(loadData);
 </script>
 
 <h1>Notifications</h1>
@@ -18,8 +25,22 @@
 {#each notifications as item}
   <div class="card">
     <h3>{item.title}</h3>
+
     <p>{item.message}</p>
-    <span>{item.priority}</span>
+
+    <p>
+      Status:
+      {item.is_read ? "Read" : "Unread"}
+    </p>
+
+    {#if !item.is_read}
+      <button
+        on:click={() =>
+          markRead(item.id)}
+      >
+        Mark Read
+      </button>
+    {/if}
   </div>
 {/each}
 

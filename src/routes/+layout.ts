@@ -1,16 +1,18 @@
-// Tauri doesn't have a Node.js server to do proper SSR
-// so we use adapter-static with a fallback to index.html
 export const ssr = false;
 
 import { initDB } from "$lib/services/database";
 
 export async function load() {
   try {
-    await initDB();
-    console.log("Database initialized");
+    const db = await initDB();
+    return {
+      dbReady: !!db,
+      error: null
+    };
   } catch (error) {
-    console.error("Database initialization failed:", error);
+    return {
+      dbReady: false,
+      error: error instanceof Error ? error.message : "Unknown error"
+    };
   }
-
-  return {};
 }

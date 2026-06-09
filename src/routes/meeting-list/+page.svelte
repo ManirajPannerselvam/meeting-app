@@ -1,40 +1,40 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import {
+    getMeetings,
+    updateMeeting,
+    deleteMeeting
+  } from "$lib/services/database";
 
   let meetings: any[] = [];
-  let editIndex = -1;
+  let editId: number | null = null;
 
-  function loadMeetings() {
-    meetings = JSON.parse(
-      localStorage.getItem("meetings") || "[]"
-    );
+  async function loadData() {
+    meetings = await getMeetings();
   }
 
-  function deleteMeeting(index: number) {
-    meetings.splice(index, 1);
-
-    localStorage.setItem(
-      "meetings",
-      JSON.stringify(meetings)
+  async function saveEdit(meeting: any) {
+    await updateMeeting(
+      meeting.id,
+      meeting
     );
 
-    loadMeetings();
+    editId = null;
+
+    await loadData();
   }
 
-  function editMeeting(index: number) {
-    editIndex = index;
+  async function removeMeeting(id: number) {
+    if (!confirm("Delete meeting?")) {
+      return;
+    }
+
+    await deleteMeeting(id);
+
+    await loadData();
   }
 
-  function saveEdit() {
-    localStorage.setItem(
-      "meetings",
-      JSON.stringify(meetings)
-    );
-
-    editIndex = -1;
-  }
-
-  onMount(loadMeetings);
+  onMount(loadData);
 </script>
 
 <h1>Meeting List</h1>
@@ -50,34 +50,39 @@
   </thead>
 
   <tbody>
-    {#each meetings as meeting, index}
+    {#each meetings as meeting}
       <tr>
         <td>
-          {#if editIndex === index}
+          {#if editId === meeting.id}
             <input bind:value={meeting.title} />
           {:else}
             {meeting.title}
           {/if}
         </td>
 
-        <td>{meeting.meetingDate}</td>
-        <td>{meeting.meetingType}</td>
+        <td>{meeting.meeting_date}</td>
+        <td>{meeting.meeting_type}</td>
 
         <td>
-          {#if editIndex === index}
-            <button on:click={saveEdit}>
+          {#if editId === meeting.id}
+            <button
+              on:click={() =>
+                saveEdit(meeting)}
+            >
               Save
             </button>
           {:else}
             <button
-              on:click={() => editMeeting(index)}
+              on:click={() =>
+                editId = meeting.id}
             >
               Edit
             </button>
           {/if}
 
           <button
-            on:click={() => deleteMeeting(index)}
+            on:click={() =>
+              removeMeeting(meeting.id)}
           >
             Delete
           </button>
