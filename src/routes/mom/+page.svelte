@@ -1,3 +1,10 @@
+let stats = {
+  totalMeetings: 0,
+  totalActions: 0,
+  pendingActions: 0,
+  completedActions: 0
+};
+
 <script lang="ts">
   let meetingNotes = "";
 

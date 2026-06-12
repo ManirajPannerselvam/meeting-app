@@ -1,14 +1,12 @@
-import { onMount } from "svelte";
+  import { onMount } from "svelte";
+  import { getMeetings } from "$lib/api/meetings";
 
-onMount(() => {
-  const template = localStorage.getItem(
-    "selectedTemplate"
-  );
+  let meetings = [];
 
-  if (template) {
-    const data = JSON.parse(template);
-
-    title = data.name;
-    agenda = data.agenda;
-  }
-});
+  onMount(async () => {
+    try {
+      meetings = await getMeetings();
+    } catch (err) {
+      console.error(err);
+    }
+  });

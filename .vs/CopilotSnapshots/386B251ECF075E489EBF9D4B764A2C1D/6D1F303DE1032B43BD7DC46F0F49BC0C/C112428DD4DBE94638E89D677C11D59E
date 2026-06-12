@@ -1,0 +1,68 @@
+﻿import { isTauri } from "$lib/utils/env";
+
+function pad(n: number) {
+  return n < 10 ? `0${n}` : `${n}`;
+}
+
+function timestamp() {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(
+    d.getHours()
+  )}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+async function writeToLogFile(line: string) {
+  try {
+    if (!isTauri()) {
+      // fallback: store in localStorage
+      const key = "__app_logs";
+      const existing = localStorage.getItem(key) || "";
+      localStorage.setItem(key, existing + line + "\n");
+      return;
+    }
+
+    const fs: any = await import("@tauri-apps/api/fs");
+    const path = "logs/app.log";
+
+    // Append by reading current file (best-effort) then writing back
+    try {
+      const existing = await fs.readTextFile(path);
+      await fs.writeFile({ path, contents: existing + line + "\n" });
+    } catch (e) {
+      // file may not exist - create it
+      await fs.writeFile({ path, contents: line + "\n" });
+    }
+  } catch (e) {
+    // give up silently - logging must not crash app
+    // but echo to console
+    // eslint-disable-next-line no-console
+    console.warn("Logger: could not write to file", e);
+  }
+}
+
+export async function log(namespace: string, message: string) {
+  const line = `[${timestamp()}] ${namespace}\nINFO:\n${message}`;
+  // eslint-disable-next-line no-console
+  console.log(line);
+  await writeToLogFile(line);
+}
+
+export async function warn(namespace: string, message: string) {
+  const line = `[${timestamp()}] ${namespace}\nWARN:\n${message}`;
+  // eslint-disable-next-line no-console
+  console.warn(line);
+  await writeToLogFile(line);
+}
+
+export async function error(namespace: string, message: string) {
+  const line = `[${timestamp()}] ${namespace}\nERROR:\n${message}`;
+  // eslint-disable-next-line no-console
+  console.error(line);
+  await writeToLogFile(line);
+}
+
+export default {
+  log,
+  warn,
+  error
+};

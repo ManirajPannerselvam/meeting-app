@@ -1,95 +1,106 @@
-<script lang="ts">
-  import { saveAction, getActions } from "$lib/services/database";
-  import { onMount } from "svelte";
+<script>
+  let showCore = false;
+  let showTracking = false;
+  let showAI = false;
+  let showResources = false;
 
-  let task = "";
-  let owner = "";
-  let dueDate = "";
-
-  let actions: any[] = [];
-
-  async function loadActions() {
-    actions = await getActions();
+  function openPage(page) {
+    console.log("Navigate to:", page);
   }
-
-  async function addAction() {
-    await saveAction({
-      meetingId: 0,
-      task,
-      owner,
-      dueDate,
-      status: "Open"
-    });
-
-    task = "";
-    owner = "";
-    dueDate = "";
-
-    await loadActions();
-  }
-
-  onMount(loadActions);
 </script>
 
-<h1>Action Tracker</h1>
+<!-- CORE -->
+<button class="group-btn" on:click={() => (showCore = !showCore)}>
+  Core Pages
+</button>
 
-<div class="form">
-  <input
-    bind:value={task}
-    placeholder="Task"
-  />
+{#if showCore}
+  <div class="submenu">
+    <button class="item-btn" on:click={() => openPage("dashboard")}>
+      Dashboard
+    </button>
 
-  <input
-    bind:value={owner}
-    placeholder="Owner"
-  />
+    <button class="item-btn" on:click={() => openPage("meetings")}>
+      Meetings
+    </button>
 
-  <input
-    type="date"
-    bind:value={dueDate}
-  />
+    <button class="item-btn" on:click={() => openPage("mom")}>
+      Meeting Minutes
+    </button>
 
-  <button on:click={addAction}>
-    Add Action
-  </button>
-</div>
+    <button class="item-btn" on:click={() => openPage("reports")}>
+      Reports
+    </button>
+  </div>
+{/if}
 
-<table>
-  <thead>
-    <tr>
-      <th>Task</th>
-      <th>Owner</th>
-      <th>Due Date</th>
-      <th>Status</th>
-    </tr>
-  </thead>
+<!-- TRACKING -->
+<button class="group-btn" on:click={() => (showTracking = !showTracking)}>
+  Tracking
+</button>
 
-  <tbody>
-    {#each actions as action}
-      <tr>
-        <td>{action.task}</td>
-        <td>{action.owner}</td>
-        <td>{action.due_date}</td>
-        <td>{action.status}</td>
-      </tr>
-    {/each}
-  </tbody>
-</table>
+{#if showTracking}
+  <div class="submenu">
+    <button class="item-btn" on:click={() => openPage("actions")}>
+      Action Tracker
+    </button>
 
-<style>
-.form{
-  display:flex;
-  gap:10px;
-  margin-bottom:20px;
-}
+    <button class="item-btn" on:click={() => openPage("kpi")}>
+      KPI Dashboard
+    </button>
 
-table{
-  width:100%;
-  border-collapse:collapse;
-}
+    <button class="item-btn" on:click={() => openPage("attendance")}>
+      Attendance
+    </button>
 
-th,td{
-  border:1px solid #ddd;
-  padding:8px;
-}
-</style>
+    <button class="item-btn" on:click={() => openPage("meeting-list")}>
+      Meeting List
+    </button>
+  </div>
+{/if}
+
+<!-- AI FEATURES -->
+<button class="group-btn" on:click={() => (showAI = !showAI)}>
+  AI Features
+</button>
+
+{#if showAI}
+  <div class="submenu">
+    <button class="item-btn" on:click={() => openPage("ai-summary")}>
+      AI Summary
+    </button>
+
+    <button class="item-btn" on:click={() => openPage("ai-assistant")}>
+      AI Assistant
+    </button>
+
+    <button class="item-btn" on:click={() => openPage("analytics")}>
+      Analytics
+    </button>
+  </div>
+{/if}
+
+<!-- RESOURCES -->
+<button class="group-btn" on:click={() => (showResources = !showResources)}>
+  Resources & Settings
+</button>
+
+{#if showResources}
+  <div class="submenu">
+    <button class="item-btn" on:click={() => openPage("devices")}>
+      Devices
+    </button>
+
+    <button class="item-btn" on:click={() => openPage("sims")}>
+      SIM Inventory
+    </button>
+
+    <button class="item-btn" on:click={() => openPage("profile")}>
+      Profile
+    </button>
+
+    <button class="item-btn" on:click={() => openPage("backup")}>
+      Backup
+    </button>
+  </div>
+{/if}
